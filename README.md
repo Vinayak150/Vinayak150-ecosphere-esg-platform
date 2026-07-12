@@ -1,8 +1,27 @@
 # EcoSphere – Enterprise ESG Management Platform
 
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
+![React](https://img.shields.io/badge/React-19-61DAFB)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
+![Tests](https://img.shields.io/badge/Tests-47%2F47-success)
+![License](https://img.shields.io/badge/License-Proprietary-red)
+
 A full-stack, production-ready ESG (Environmental, Social, and Governance) platform built as a modular monolith. EcoSphere unifies carbon tracking, CSR engagement, compliance management, and employee gamification behind a single executive dashboard — with JWT authentication, role-based access control, and end-to-end test coverage.
 
+## Demo
+
+![EcoSphere Demo](docs/demo.gif)
+
+> Record a walkthrough and save it as `docs/demo.gif` to display the animated preview above.
+
+## Why EcoSphere?
+
+EcoSphere transforms fragmented ESG management into a unified enterprise platform. Instead of spreadsheets and disconnected tools, organizations gain real-time visibility into sustainability, employee engagement, compliance, and executive insights through a single application.
+
 > Aligned with [`SYSTEM_BLUEPRINT.md`](SYSTEM_BLUEPRINT.md) · Version **1.0.0**
+
+**Contents:** [Demo Credentials](#demo-credentials) · [Screenshots](#screenshots) · [Features](#features) · [Quick Start](#quick-start) · [Seed Data](#seed-data) · [Testing](#testing)
 
 ---
 
