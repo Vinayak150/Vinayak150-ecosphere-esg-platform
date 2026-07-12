@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ecosphere
+          POSTGRES_PASSWORD: ecosphere
+          POSTGRES_DB: ecosphere
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ecosphere -d ecosphere"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Lint backend
+        run: |
+          cd backend
+          ruff check app
+          mypy app
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql+psycopg://ecosphere:ecosphere@localhost:5432/ecosphere
+          JWT_SECRET_KEY: ci-test-secret-key-minimum-32-characters-long
+        run: |
+          cd backend
+          alembic upgrade head
+
+      - name: Test backend
+        env:
+          DATABASE_URL: postgresql+psycopg://ecosphere:ecosphere@localhost:5432/ecosphere
+          JWT_SECRET_KEY: ci-test-secret-key-minimum-32-characters-long
+        run: |
+          cd backend
+          pytest
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm --prefix frontend ci
+
+      - name: Lint frontend
+        run: npm --prefix frontend run lint
+
+      - name: Typecheck frontend
+        run: npm --prefix frontend run typecheck
+
+      - name: Build frontend
+        run: npm --prefix frontend run build

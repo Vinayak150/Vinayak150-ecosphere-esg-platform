@@ -1,0 +1,1 @@
+"""EcoSphere backend application package."""
