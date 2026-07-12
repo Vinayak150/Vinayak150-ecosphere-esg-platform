@@ -14,9 +14,15 @@ import {
   YAxis,
 } from "recharts";
 
-import type { EnvironmentalAnalytics } from "../types/environmental.types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { EmptyState } from "@/shared/components/feedback/states";
+import {
+  CHART_AXIS_STYLE,
+  CHART_COLORS,
+  CHART_TOOLTIP_STYLE,
+} from "@/shared/constants/chart-colors";
 
-const CHART_COLORS = ["#16a34a", "#22c55e", "#4ade80", "#86efac", "#15803d", "#166534"];
+import type { EnvironmentalAnalytics } from "../types/environmental.types";
 
 interface ChartsProps {
   analytics: EnvironmentalAnalytics;
@@ -36,97 +42,144 @@ export function EnvironmentalCharts({ analytics }: ChartsProps) {
   const sourcesData = analytics.top_carbon_sources.map((item) => ({
     name: item.emission_factor_name,
     value: Number(item.total_emission),
-    sourceType: item.source_type,
+  }));
+
+  const goalData = analytics.goal_progress.map((goal) => ({
+    name: goal.title,
+    progress: Number(goal.progress_percentage),
   }));
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <div className="rounded-lg border bg-card p-4 shadow-sm">
-        <h3 className="mb-4 text-sm font-semibold">Monthly Carbon Trend</h3>
-        <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={trendData}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="emission"
-                name="CO₂ (kg)"
-                stroke="#16a34a"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Monthly Carbon Trend</CardTitle>
+        </CardHeader>
+        <CardContent className="h-72">
+          {trendData.length === 0 ? (
+            <EmptyState
+              title="No trend data"
+              description="Carbon transactions will populate this chart once recorded."
+            />
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis dataKey="month" tick={CHART_AXIS_STYLE} />
+                <YAxis tick={CHART_AXIS_STYLE} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="emission"
+                  name="CO₂ (kg)"
+                  stroke={CHART_COLORS.primary}
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
 
-      <div className="rounded-lg border bg-card p-4 shadow-sm">
-        <h3 className="mb-4 text-sm font-semibold">Department Carbon Total</h3>
-        <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={departmentData}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="emission" name="CO₂ (kg)" fill="#16a34a" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Department Carbon Total</CardTitle>
+        </CardHeader>
+        <CardContent className="h-72">
+          {departmentData.length === 0 ? (
+            <EmptyState
+              title="No department data"
+              description="Department emissions will appear after carbon is logged."
+            />
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={departmentData}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis dataKey="name" tick={CHART_AXIS_STYLE} />
+                <YAxis tick={CHART_AXIS_STYLE} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
+                <Legend />
+                <Bar
+                  dataKey="emission"
+                  name="CO₂ (kg)"
+                  fill={CHART_COLORS.primary}
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
 
-      <div className="rounded-lg border bg-card p-4 shadow-sm lg:col-span-2">
-        <h3 className="mb-4 text-sm font-semibold">Goal Progress</h3>
-        <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={analytics.goal_progress.map((goal) => ({
-                name: goal.title,
-                progress: Number(goal.progress_percentage),
-              }))}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12 }} />
-              <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11 }} />
-              <Tooltip />
-              <Bar dataKey="progress" name="Progress %" fill="#22c55e" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="text-base">Goal Progress</CardTitle>
+        </CardHeader>
+        <CardContent className="h-72">
+          {goalData.length === 0 ? (
+            <EmptyState
+              title="No goals yet"
+              description="Environmental goals will show progress here."
+            />
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={goalData} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis type="number" domain={[0, 100]} tick={CHART_AXIS_STYLE} />
+                <YAxis type="category" dataKey="name" width={140} tick={CHART_AXIS_STYLE} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
+                <Bar
+                  dataKey="progress"
+                  name="Progress %"
+                  fill={CHART_COLORS.environmental[1]}
+                  radius={[0, 4, 4, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
 
-      <div className="rounded-lg border bg-card p-4 shadow-sm lg:col-span-2">
-        <h3 className="mb-4 text-sm font-semibold">Top Carbon Sources</h3>
-        <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={sourcesData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                label={({ name, percent }) =>
-                  `${name ?? ""} (${((percent ?? 0) * 100).toFixed(0)}%)`
-                }
-              >
-                {sourcesData.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle className="text-base">Top Carbon Sources</CardTitle>
+        </CardHeader>
+        <CardContent className="h-72">
+          {sourcesData.length === 0 ? (
+            <EmptyState
+              title="No source data"
+              description="Emission sources appear after carbon transactions are logged."
+            />
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={sourcesData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  label={({ name, percent }) =>
+                    `${name ?? ""} (${((percent ?? 0) * 100).toFixed(0)}%)`
+                  }
+                >
+                  {sourcesData.map((_, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={CHART_COLORS.environmental[index % CHART_COLORS.environmental.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

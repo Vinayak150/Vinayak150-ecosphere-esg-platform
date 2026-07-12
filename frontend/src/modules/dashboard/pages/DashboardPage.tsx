@@ -15,33 +15,32 @@ import { RecentActivityTimeline } from "@/modules/dashboard/components/RecentAct
 import { RecentCarbonTransactionsTable } from "@/modules/dashboard/components/RecentCarbonTransactionsTable";
 import { useDashboard } from "@/modules/dashboard/hooks/useDashboard";
 import { ErrorState, LoadingSkeleton } from "@/shared/components/feedback/states";
+import { PageHeader } from "@/shared/components/layout/PageHeader";
 
 export function DashboardPage() {
   const { data, isLoading, isError, refetch } = useDashboard();
 
   if (isLoading) {
     return (
-      <div className="space-y-6 p-4 md:p-6">
+      <div className="space-y-6">
         <LoadingSkeleton className="h-10 w-72" />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <LoadingSkeleton key={index} className="h-28 w-full" />
+            <LoadingSkeleton key={index} className="h-32 w-full rounded-xl" />
           ))}
         </div>
-        <LoadingSkeleton className="h-80 w-full" />
+        <LoadingSkeleton className="h-80 w-full rounded-xl" />
       </div>
     );
   }
 
   if (isError || !data) {
     return (
-      <div className="p-4 md:p-6">
-        <ErrorState
-          title="Unable to load dashboard"
-          message="The executive dashboard could not be loaded from the server."
-          onRetry={() => void refetch()}
-        />
-      </div>
+      <ErrorState
+        title="Unable to load dashboard"
+        message="The executive dashboard could not be loaded from the server."
+        onRetry={() => void refetch()}
+      />
     );
   }
 
@@ -50,17 +49,13 @@ export function DashboardPage() {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className="space-y-8 p-4 md:p-6"
+      className="space-y-8"
     >
-      <div>
-        <div className="flex items-center gap-2">
-          <LayoutDashboard className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold tracking-tight">Executive Dashboard</h1>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          Real-time ESG performance aggregated from live platform data
-        </p>
-      </div>
+      <PageHeader
+        icon={LayoutDashboard}
+        title="Executive Dashboard"
+        description="Real-time ESG performance aggregated from live platform data"
+      />
 
       <ExecutiveKpiCards data={data} />
 

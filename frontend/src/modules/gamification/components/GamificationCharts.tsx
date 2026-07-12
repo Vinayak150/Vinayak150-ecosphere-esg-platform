@@ -14,10 +14,13 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { EmptyState } from "@/shared/components/feedback/states";
+import {
+  CHART_AXIS_STYLE,
+  CHART_COLORS,
+  CHART_TOOLTIP_STYLE,
+} from "@/shared/constants/chart-colors";
 
 import type { GamificationAnalytics } from "../types/gamification.types";
-
-const CHART_COLORS = ["#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#1d4ed8", "#7c3aed"];
 
 interface GamificationChartsProps {
   analytics: GamificationAnalytics;
@@ -58,10 +61,13 @@ export function GamificationCharts({ analytics }: GamificationChartsProps) {
               <PieChart>
                 <Pie data={badgeData} dataKey="value" nameKey="name" outerRadius={90} label>
                   {badgeData.map((_, index) => (
-                    <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    <Cell
+                      key={index}
+                      fill={CHART_COLORS.gamification[index % CHART_COLORS.gamification.length]}
+                    />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
@@ -83,10 +89,15 @@ export function GamificationCharts({ analytics }: GamificationChartsProps) {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={departmentData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Bar dataKey="xp" name="Total XP" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+                <XAxis dataKey="name" tick={CHART_AXIS_STYLE} />
+                <YAxis tick={CHART_AXIS_STYLE} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
+                <Bar
+                  dataKey="xp"
+                  name="Total XP"
+                  fill={CHART_COLORS.governancePillar}
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -107,12 +118,22 @@ export function GamificationCharts({ analytics }: GamificationChartsProps) {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={topEmployees}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
+                <XAxis dataKey="name" tick={CHART_AXIS_STYLE} />
+                <YAxis tick={CHART_AXIS_STYLE} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 <Legend />
-                <Bar dataKey="xp" name="Total XP" fill="#2563eb" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="badges" name="Badges" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                <Bar
+                  dataKey="xp"
+                  name="Total XP"
+                  fill={CHART_COLORS.socialPillar}
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar
+                  dataKey="badges"
+                  name="Badges"
+                  fill={CHART_COLORS.primary}
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           )}

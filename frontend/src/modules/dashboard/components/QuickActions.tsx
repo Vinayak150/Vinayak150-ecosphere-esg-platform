@@ -17,7 +17,7 @@ export function QuickActions({ actions }: QuickActionsProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Quick Actions</CardTitle>
+        <CardTitle className="text-base font-semibold">Quick Actions</CardTitle>
       </CardHeader>
       <CardContent>
         {enabledActions.length === 0 ? (
@@ -26,12 +26,12 @@ export function QuickActions({ actions }: QuickActionsProps) {
             description="Your role does not have quick actions enabled."
           />
         ) : (
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {enabledActions.map((action) => (
               <Button
                 key={action.id}
                 variant="outline"
-                className="h-auto flex-col items-start gap-1 p-4 text-left"
+                className="h-auto flex-col items-start gap-1.5 rounded-xl p-4 text-left transition-all hover:border-primary/40 hover:bg-primary/5"
                 onClick={() => navigate(action.route)}
               >
                 <span className="font-medium">{action.label}</span>

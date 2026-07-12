@@ -60,36 +60,10 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { EmptyState, ErrorState, LoadingSkeleton } from "@/shared/components/feedback/states";
+import { EmptyState, ErrorState, LoadingSkeleton, TableSkeleton } from "@/shared/components/feedback/states";
+import { PageHeader } from "@/shared/components/layout/PageHeader";
+import { PaginationBar } from "@/shared/components/layout/PaginationBar";
 import { useToast } from "@/shared/hooks/use-toast";
-
-function PaginationBar({
-  page,
-  pages,
-  total,
-  onPageChange,
-}: {
-  page: number;
-  pages: number;
-  total: number;
-  onPageChange: (page: number) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between border-t px-4 py-3 text-sm text-muted-foreground">
-      <span>
-        Page {page} of {pages || 1} ({total} total)
-      </span>
-      <div className="flex gap-2">
-        <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
-          Previous
-        </Button>
-        <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => onPageChange(page + 1)}>
-          Next
-        </Button>
-      </div>
-    </div>
-  );
-}
 
 function approvalVariant(status: string): "default" | "secondary" | "destructive" {
   if (status === "APPROVED") return "default";
@@ -272,22 +246,20 @@ export function GamificationPage() {
 
   if (analyticsLoading) {
     return (
-      <div className="space-y-4 p-6">
+      <div className="space-y-6">
         <LoadingSkeleton className="h-10 w-64" />
-        <LoadingSkeleton className="h-48 w-full" />
+        <LoadingSkeleton className="h-48 w-full rounded-xl" />
       </div>
     );
   }
 
   if (isError || !analytics) {
     return (
-      <div className="p-6">
-        <ErrorState
-          title="Unable to load gamification data"
-          message="The gamification dashboard could not be loaded."
-          onRetry={() => void refetch()}
-        />
-      </div>
+      <ErrorState
+        title="Unable to load gamification data"
+        message="The gamification dashboard could not be loaded."
+        onRetry={() => void refetch()}
+      />
     );
   }
 
@@ -298,31 +270,29 @@ export function GamificationPage() {
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-8 p-4 md:p-6"
+      transition={{ duration: 0.25 }}
+      className="space-y-8"
     >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <Trophy className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold tracking-tight">Gamification Hub</h1>
+      <PageHeader
+        icon={Trophy}
+        title="Gamification Hub"
+        description="Challenges, badges, rewards, and leaderboards powered by live XP data"
+        action={
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              className="pl-9"
+              placeholder="Search challenges..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              aria-label="Search gamification records"
+            />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Challenges, badges, rewards, and leaderboards powered by live XP data
-          </p>
-        </div>
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            className="pl-9"
-            placeholder="Search challenges..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
-      </div>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -409,7 +379,7 @@ export function GamificationPage() {
       </section>
 
       {canWrite ? (
-        <section className="rounded-lg border bg-card shadow-sm">
+        <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
           <div className="flex items-center justify-between border-b p-4">
             <h2 className="text-lg font-semibold">Review Queue</h2>
             <UiBadge>{pendingReviews.length} submitted</UiBadge>
@@ -479,7 +449,7 @@ export function GamificationPage() {
         </section>
       ) : null}
 
-      <section className="rounded-lg border bg-card shadow-sm">
+      <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
         <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <Target className="h-5 w-5 text-primary" />
@@ -514,7 +484,7 @@ export function GamificationPage() {
         </div>
         {challengesLoading ? (
           <div className="p-4">
-            <LoadingSkeleton className="h-32 w-full" />
+            <TableSkeleton rows={5} columns={5} />
           </div>
         ) : !challengesData?.data.length ? (
           <div className="p-4">
@@ -612,14 +582,14 @@ export function GamificationPage() {
         )}
       </section>
 
-      <section className="rounded-lg border bg-card shadow-sm">
+      <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
         <div className="flex items-center gap-2 border-b p-4">
           <Medal className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold">Participation</h2>
         </div>
         {participationsLoading ? (
           <div className="p-4">
-            <LoadingSkeleton className="h-32 w-full" />
+            <TableSkeleton rows={5} columns={5} />
           </div>
         ) : !participationsData?.data.length ? (
           <div className="p-4">
@@ -672,7 +642,7 @@ export function GamificationPage() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-lg border bg-card shadow-sm">
+        <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
           <div className="flex items-center justify-between border-b p-4">
             <div className="flex items-center gap-2">
               <Award className="h-5 w-5 text-primary" />
@@ -703,7 +673,7 @@ export function GamificationPage() {
           </div>
         </section>
 
-        <section className="rounded-lg border bg-card shadow-sm">
+        <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
           <div className="flex items-center gap-2 border-b p-4">
             <Trophy className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold">Recent Badge Unlocks</h2>
@@ -731,7 +701,7 @@ export function GamificationPage() {
         </section>
       </div>
 
-      <section className="rounded-lg border bg-card shadow-sm">
+      <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
         <div className="flex items-center justify-between border-b p-4">
           <div className="flex items-center gap-2">
             <Gift className="h-5 w-5 text-primary" />
@@ -775,7 +745,7 @@ export function GamificationPage() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-lg border bg-card shadow-sm">
+        <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
           <div className="flex items-center gap-2 border-b p-4">
             <Trophy className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold">Company Leaderboard</h2>
@@ -804,7 +774,7 @@ export function GamificationPage() {
           </Table>
         </section>
 
-        <section className="rounded-lg border bg-card shadow-sm">
+        <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
           <div className="flex items-center gap-2 border-b p-4">
             <Trophy className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold">Department Leaderboard</h2>

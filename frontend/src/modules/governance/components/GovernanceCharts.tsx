@@ -14,10 +14,15 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { EmptyState } from "@/shared/components/feedback/states";
+import {
+  CHART_AXIS_STYLE,
+  CHART_COLORS,
+  CHART_TOOLTIP_STYLE,
+} from "@/shared/constants/chart-colors";
 
 import type { GovernanceAnalytics } from "../types/governance.types";
 
-const SEVERITY_COLORS = ["#22c55e", "#eab308", "#f97316", "#ef4444"];
+const ISSUE_STATUS_COLORS = ["#22c55e", "#eab308", "#ef4444"];
 
 interface GovernanceChartsProps {
   analytics: GovernanceAnalytics;
@@ -52,10 +57,15 @@ export function GovernanceCharts({ analytics }: GovernanceChartsProps) {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={scoreBreakdown}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
-              <Tooltip />
-              <Bar dataKey="value" name="Score %" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+              <XAxis dataKey="name" tick={CHART_AXIS_STYLE} />
+              <YAxis domain={[0, 100]} tick={CHART_AXIS_STYLE} />
+              <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
+              <Bar
+                dataKey="value"
+                name="Score %"
+                fill={CHART_COLORS.governancePillar}
+                radius={[4, 4, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -76,10 +86,13 @@ export function GovernanceCharts({ analytics }: GovernanceChartsProps) {
               <PieChart>
                 <Pie data={issueBreakdown} dataKey="value" nameKey="name" outerRadius={90} label>
                   {issueBreakdown.map((_, index) => (
-                    <Cell key={index} fill={SEVERITY_COLORS[index % SEVERITY_COLORS.length]} />
+                    <Cell
+                      key={index}
+                      fill={ISSUE_STATUS_COLORS[index % ISSUE_STATUS_COLORS.length]}
+                    />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>

@@ -21,12 +21,15 @@ export function RecentActivityTimeline({ activities }: RecentActivityTimelinePro
             description="Platform actions will appear in this timeline."
           />
         ) : (
-          <ol className="relative space-y-4 border-l border-muted pl-4">
+          <ol className="relative space-y-5 border-l-2 border-primary/20 pl-5">
             {activities.map((activity) => (
-              <li key={activity.id} className="relative">
-                <span className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-primary" />
-                <p className="text-sm font-medium">{activity.message}</p>
-                <p className="text-xs text-muted-foreground">
+              <li
+                key={activity.id}
+                className="relative rounded-lg border border-transparent p-2 transition-colors hover:border-muted hover:bg-muted/30"
+              >
+                <span className="absolute -left-[1.625rem] top-3 h-3 w-3 rounded-full border-2 border-background bg-primary shadow-sm ring-2 ring-primary/20" />
+                <p className="text-sm font-medium leading-snug">{activity.message}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
                   {activity.action} · {formatDistanceToNow(activity.created_at)}
                 </p>
               </li>

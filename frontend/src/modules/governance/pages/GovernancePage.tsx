@@ -54,36 +54,10 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { EmptyState, ErrorState, LoadingSkeleton } from "@/shared/components/feedback/states";
+import { EmptyState, ErrorState, LoadingSkeleton, TableSkeleton } from "@/shared/components/feedback/states";
+import { PageHeader } from "@/shared/components/layout/PageHeader";
+import { PaginationBar } from "@/shared/components/layout/PaginationBar";
 import { useToast } from "@/shared/hooks/use-toast";
-
-function PaginationBar({
-  page,
-  pages,
-  total,
-  onPageChange,
-}: {
-  page: number;
-  pages: number;
-  total: number;
-  onPageChange: (page: number) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between border-t px-4 py-3 text-sm text-muted-foreground">
-      <span>
-        Page {page} of {pages || 1} ({total} total)
-      </span>
-      <div className="flex gap-2">
-        <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
-          Previous
-        </Button>
-        <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => onPageChange(page + 1)}>
-          Next
-        </Button>
-      </div>
-    </div>
-  );
-}
 
 function severityVariant(severity: string): "default" | "secondary" | "destructive" {
   if (severity === "CRITICAL" || severity === "HIGH") return "destructive";
@@ -242,13 +216,32 @@ export function GovernancePage() {
   }
 
   return (
-    <div className="space-y-6 p-4 md:p-6">
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold tracking-tight">Governance Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Policies, audits, compliance tracking, and governance performance
-        </p>
-      </motion.div>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="space-y-6"
+    >
+      <PageHeader
+        icon={Scale}
+        title="Governance Dashboard"
+        description="Policies, audits, compliance tracking, and governance performance"
+        action={
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              className="pl-9"
+              placeholder="Search policies..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              aria-label="Search governance records"
+            />
+          </div>
+        }
+      />
 
       {analyticsLoading ? (
         <LoadingSkeleton className="h-28 w-full" />
@@ -287,18 +280,6 @@ export function GovernancePage() {
             Policy Table
           </CardTitle>
           <div className="flex flex-wrap gap-2">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                className="pl-8"
-                placeholder="Search policies..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
             {canWritePolicies && (
               <Button size="sm" onClick={() => setPolicyDialogOpen(true)}>
                 <Plus className="mr-1 h-4 w-4" />
@@ -309,7 +290,7 @@ export function GovernancePage() {
         </CardHeader>
         <CardContent className="p-0">
           {policiesLoading ? (
-            <LoadingSkeleton className="m-4 h-40" />
+            <TableSkeleton rows={5} columns={5} />
           ) : !policiesData?.data.length ? (
             <EmptyState title="No policies" description="Create a policy to get started." />
           ) : (
@@ -392,7 +373,7 @@ export function GovernancePage() {
         </CardHeader>
         <CardContent className="p-0">
           {auditsLoading ? (
-            <LoadingSkeleton className="m-4 h-40" />
+            <TableSkeleton rows={5} columns={5} />
           ) : !auditsData?.data.length ? (
             <EmptyState title="No audits" description="Schedule an audit to begin tracking." />
           ) : (
@@ -466,7 +447,7 @@ export function GovernancePage() {
         </CardHeader>
         <CardContent className="p-0">
           {issuesLoading ? (
-            <LoadingSkeleton className="m-4 h-40" />
+            <TableSkeleton rows={5} columns={5} />
           ) : !issuesData?.data.length ? (
             <EmptyState title="No compliance issues" description="All issues are resolved." />
           ) : (
@@ -680,6 +661,6 @@ export function GovernancePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </motion.div>
   );
 }

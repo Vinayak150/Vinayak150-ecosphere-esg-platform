@@ -16,10 +16,13 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { EmptyState } from "@/shared/components/feedback/states";
+import {
+  CHART_AXIS_STYLE,
+  CHART_COLORS,
+  CHART_TOOLTIP_STYLE,
+} from "@/shared/constants/chart-colors";
 
 import type { DashboardData } from "../types/dashboard.types";
-
-const SOURCE_COLORS = ["#16a34a", "#22c55e", "#4ade80", "#86efac", "#15803d"];
 
 interface DashboardChartsProps {
   data: DashboardData;
@@ -57,15 +60,15 @@ export function DashboardCharts({ data }: DashboardChartsProps) {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
+                <XAxis dataKey="month" tick={CHART_AXIS_STYLE} />
+                <YAxis tick={CHART_AXIS_STYLE} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 <Legend />
                 <Line
                   type="monotone"
                   dataKey="emission"
                   name="CO₂ (kg)"
-                  stroke="#16a34a"
+                  stroke={CHART_COLORS.primary}
                   strokeWidth={2}
                 />
               </LineChart>
@@ -89,10 +92,13 @@ export function DashboardCharts({ data }: DashboardChartsProps) {
               <PieChart>
                 <Pie data={sourcesData} dataKey="value" nameKey="name" outerRadius={90} label>
                   {sourcesData.map((_, index) => (
-                    <Cell key={index} fill={SOURCE_COLORS[index % SOURCE_COLORS.length]} />
+                    <Cell
+                      key={index}
+                      fill={CHART_COLORS.environmental[index % CHART_COLORS.environmental.length]}
+                    />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
@@ -114,10 +120,15 @@ export function DashboardCharts({ data }: DashboardChartsProps) {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={goalData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis type="number" domain={[0, 100]} />
-                <YAxis type="category" dataKey="name" width={140} tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Bar dataKey="progress" name="Progress %" fill="#22c55e" radius={[0, 4, 4, 0]} />
+                <XAxis type="number" domain={[0, 100]} tick={CHART_AXIS_STYLE} />
+                <YAxis type="category" dataKey="name" width={140} tick={CHART_AXIS_STYLE} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
+                <Bar
+                  dataKey="progress"
+                  name="Progress %"
+                  fill={CHART_COLORS.environmental[1]}
+                  radius={[0, 4, 4, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           )}

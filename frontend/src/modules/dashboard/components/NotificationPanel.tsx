@@ -18,7 +18,7 @@ export function NotificationPanel({ notifications }: NotificationPanelProps) {
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-base">Notifications</CardTitle>
+        <CardTitle className="text-base font-semibold">Notifications</CardTitle>
       </CardHeader>
       <CardContent>
         {notifications.length === 0 ? (
@@ -29,7 +29,10 @@ export function NotificationPanel({ notifications }: NotificationPanelProps) {
         ) : (
           <div className="space-y-3">
             {notifications.map((notification) => (
-              <div key={notification.id} className="rounded-lg border p-3">
+              <div
+                key={notification.id}
+                className="rounded-lg border bg-muted/20 p-3 transition-colors duration-150 hover:bg-muted/40"
+              >
                 <div className="mb-1 flex items-center justify-between gap-2">
                   <p className="text-sm font-medium">{notification.title}</p>
                   <Badge variant={severityVariant(notification.severity)}>

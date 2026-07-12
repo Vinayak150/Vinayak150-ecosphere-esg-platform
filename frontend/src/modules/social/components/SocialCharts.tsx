@@ -16,10 +16,13 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { EmptyState } from "@/shared/components/feedback/states";
+import {
+  CHART_AXIS_STYLE,
+  CHART_COLORS,
+  CHART_TOOLTIP_STYLE,
+} from "@/shared/constants/chart-colors";
 
 import type { SocialAnalytics } from "../types/social.types";
-
-const COLORS = ["#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#1d4ed8"];
 
 interface SocialChartsProps {
   analytics: SocialAnalytics;
@@ -58,12 +61,22 @@ export function SocialCharts({ analytics }: SocialChartsProps) {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
+                <XAxis dataKey="month" tick={CHART_AXIS_STYLE} />
+                <YAxis tick={CHART_AXIS_STYLE} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 <Legend />
-                <Line type="monotone" dataKey="participations" stroke="#2563eb" strokeWidth={2} />
-                <Line type="monotone" dataKey="approved" stroke="#60a5fa" strokeWidth={2} />
+                <Line
+                  type="monotone"
+                  dataKey="participations"
+                  stroke={CHART_COLORS.socialPillar}
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="approved"
+                  stroke={CHART_COLORS.social[2]}
+                  strokeWidth={2}
+                />
               </LineChart>
             </ResponsiveContainer>
           )}
@@ -85,10 +98,13 @@ export function SocialCharts({ analytics }: SocialChartsProps) {
               <PieChart>
                 <Pie data={departmentData} dataKey="value" nameKey="name" outerRadius={90} label>
                   {departmentData.map((_, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                    <Cell
+                      key={index}
+                      fill={CHART_COLORS.social[index % CHART_COLORS.social.length]}
+                    />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
@@ -110,10 +126,15 @@ export function SocialCharts({ analytics }: SocialChartsProps) {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={departmentParticipation}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Bar dataKey="rate" name="Participation %" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                <XAxis dataKey="name" tick={CHART_AXIS_STYLE} />
+                <YAxis domain={[0, 100]} tick={CHART_AXIS_STYLE} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
+                <Bar
+                  dataKey="rate"
+                  name="Participation %"
+                  fill={CHART_COLORS.socialPillar}
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           )}

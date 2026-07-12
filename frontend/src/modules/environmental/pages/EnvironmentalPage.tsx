@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { Leaf, Plus, Search, Trash2 } from "lucide-react";
 
 import { usePermission } from "@/modules/auth/hooks/usePermission";
@@ -24,7 +25,9 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { ErrorState, LoadingSkeleton } from "@/shared/components/feedback/states";
+import { ErrorState, LoadingSkeleton, TableSkeleton } from "@/shared/components/feedback/states";
+import { PageHeader } from "@/shared/components/layout/PageHeader";
+import { PaginationBar } from "@/shared/components/layout/PaginationBar";
 import { useToast } from "@/shared/hooks/use-toast";
 
 import { EnvironmentalCharts } from "../components/EnvironmentalCharts";
@@ -56,39 +59,6 @@ function formatNumber(value: string | number, decimals = 2): string {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });
-}
-
-function PaginationBar({
-  page,
-  pages,
-  total,
-  onPageChange,
-}: {
-  page: number;
-  pages: number;
-  total: number;
-  onPageChange: (page: number) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between border-t px-4 py-3 text-sm text-muted-foreground">
-      <span>
-        Page {page} of {pages || 1} ({total} total)
-      </span>
-      <div className="flex gap-2">
-        <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={page >= pages}
-          onClick={() => onPageChange(page + 1)}
-        >
-          Next
-        </Button>
-      </div>
-    </div>
-  );
 }
 
 function goalStatusVariant(status: string): "default" | "secondary" | "destructive" {
@@ -278,50 +248,50 @@ export function EnvironmentalPage() {
 
   if (analyticsLoading) {
     return (
-      <div className="space-y-4 p-6">
+      <div className="space-y-6">
         <LoadingSkeleton className="h-10 w-64" />
-        <LoadingSkeleton className="h-48 w-full" />
+        <LoadingSkeleton className="h-48 w-full rounded-xl" />
       </div>
     );
   }
 
   if (isError || !analytics) {
     return (
-      <div className="p-6">
-        <ErrorState
-          title="Unable to load environmental data"
-          message="Please try again later."
-          onRetry={() => void refetch()}
-        />
-      </div>
+      <ErrorState
+        title="Unable to load environmental data"
+        message="Please try again later."
+        onRetry={() => void refetch()}
+      />
     );
   }
 
   return (
-    <div className="space-y-8 p-4 md:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <Leaf className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold tracking-tight">Environmental Dashboard</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="space-y-8"
+    >
+      <PageHeader
+        icon={Leaf}
+        title="Environmental Dashboard"
+        description="Track carbon emissions, goals, and product ESG performance"
+        action={
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              className="pl-9"
+              placeholder="Search across tables..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              aria-label="Search environmental records"
+            />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Track carbon emissions, goals, and product ESG performance
-          </p>
-        </div>
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            className="pl-9"
-            placeholder="Search across tables..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
-      </div>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -377,7 +347,7 @@ export function EnvironmentalPage() {
           ) : null}
         </div>
         {goalsLoading ? (
-          <LoadingSkeleton className="h-32 w-full" />
+          <TableSkeleton rows={5} columns={5} />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {(goalsData?.data ?? []).map((goal) => (
@@ -448,7 +418,7 @@ export function EnvironmentalPage() {
         )}
       </section>
 
-      <section className="rounded-lg border bg-card shadow-sm">
+      <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
         <div className="flex items-center justify-between border-b p-4">
           <h2 className="text-lg font-semibold">Emission Factors</h2>
           {canWrite ? (
@@ -466,7 +436,7 @@ export function EnvironmentalPage() {
         </div>
         {factorsLoading ? (
           <div className="p-4">
-            <LoadingSkeleton className="h-32 w-full" />
+            <TableSkeleton rows={5} columns={5} />
           </div>
         ) : (
           <>
@@ -548,7 +518,7 @@ export function EnvironmentalPage() {
         )}
       </section>
 
-      <section className="rounded-lg border bg-card shadow-sm">
+      <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
         <div className="flex items-center justify-between border-b p-4">
           <h2 className="text-lg font-semibold">Carbon Transactions</h2>
           {canWrite ? (
@@ -566,7 +536,7 @@ export function EnvironmentalPage() {
         </div>
         {transactionsLoading ? (
           <div className="p-4">
-            <LoadingSkeleton className="h-32 w-full" />
+            <TableSkeleton rows={5} columns={5} />
           </div>
         ) : (
           <>
@@ -650,7 +620,7 @@ export function EnvironmentalPage() {
         )}
       </section>
 
-      <section className="rounded-lg border bg-card shadow-sm">
+      <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
         <div className="flex items-center justify-between border-b p-4">
           <h2 className="text-lg font-semibold">Product ESG Profiles</h2>
           {canWrite ? (
@@ -668,7 +638,7 @@ export function EnvironmentalPage() {
         </div>
         {productsLoading ? (
           <div className="p-4">
-            <LoadingSkeleton className="h-32 w-full" />
+            <TableSkeleton rows={5} columns={5} />
           </div>
         ) : (
           <>
@@ -1036,6 +1006,6 @@ export function EnvironmentalPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </motion.div>
   );
 }

@@ -49,7 +49,7 @@ export function LoginPage() {
         transition={{ duration: 0.35 }}
         className="w-full"
       >
-        <Card className="border shadow-sm">
+        <Card className="border shadow-sm transition-shadow hover:shadow-md">
           <CardHeader className="space-y-2 text-center sm:text-left">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary sm:mx-0">
               <Leaf className="h-6 w-6" />

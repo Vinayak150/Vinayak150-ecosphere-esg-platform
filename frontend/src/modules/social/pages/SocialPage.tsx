@@ -35,36 +35,10 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { EmptyState, ErrorState, LoadingSkeleton } from "@/shared/components/feedback/states";
+import { EmptyState, ErrorState, LoadingSkeleton, TableSkeleton } from "@/shared/components/feedback/states";
+import { PageHeader } from "@/shared/components/layout/PageHeader";
+import { PaginationBar } from "@/shared/components/layout/PaginationBar";
 import { useToast } from "@/shared/hooks/use-toast";
-
-function PaginationBar({
-  page,
-  pages,
-  total,
-  onPageChange,
-}: {
-  page: number;
-  pages: number;
-  total: number;
-  onPageChange: (page: number) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between border-t px-4 py-3 text-sm text-muted-foreground">
-      <span>
-        Page {page} of {pages || 1} ({total} total)
-      </span>
-      <div className="flex gap-2">
-        <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
-          Previous
-        </Button>
-        <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => onPageChange(page + 1)}>
-          Next
-        </Button>
-      </div>
-    </div>
-  );
-}
 
 function approvalVariant(status: string): "default" | "secondary" | "destructive" {
   if (status === "APPROVED") return "default";
@@ -163,22 +137,20 @@ export function SocialPage() {
 
   if (analyticsLoading) {
     return (
-      <div className="space-y-4 p-6">
+      <div className="space-y-6">
         <LoadingSkeleton className="h-10 w-64" />
-        <LoadingSkeleton className="h-48 w-full" />
+        <LoadingSkeleton className="h-48 w-full rounded-xl" />
       </div>
     );
   }
 
   if (isError || !analytics) {
     return (
-      <div className="p-6">
-        <ErrorState
-          title="Unable to load social data"
-          message="The CSR dashboard could not be loaded."
-          onRetry={() => void refetch()}
-        />
-      </div>
+      <ErrorState
+        title="Unable to load social data"
+        message="The CSR dashboard could not be loaded."
+        onRetry={() => void refetch()}
+      />
     );
   }
 
@@ -188,31 +160,29 @@ export function SocialPage() {
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-8 p-4 md:p-6"
+      transition={{ duration: 0.25 }}
+      className="space-y-8"
     >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <HandHeart className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold tracking-tight">CSR Dashboard</h1>
+      <PageHeader
+        icon={HandHeart}
+        title="CSR Dashboard"
+        description="Manage CSR activities, participation, and social impact metrics"
+        action={
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              className="pl-9"
+              placeholder="Search activities..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              aria-label="Search CSR activities"
+            />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Manage CSR activities, participation, and social impact metrics
-          </p>
-        </div>
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            className="pl-9"
-            placeholder="Search activities..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
-      </div>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -284,7 +254,7 @@ export function SocialPage() {
       </section>
 
       {canWrite ? (
-        <section className="rounded-lg border bg-card shadow-sm">
+        <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
           <div className="flex items-center justify-between border-b p-4">
             <h2 className="text-lg font-semibold">Approval Queue</h2>
             <Badge>{pendingApprovals.length} pending</Badge>
@@ -354,7 +324,7 @@ export function SocialPage() {
         </section>
       ) : null}
 
-      <section className="rounded-lg border bg-card shadow-sm">
+      <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
         <div className="flex items-center justify-between border-b p-4">
           <h2 className="text-lg font-semibold">CSR Activities</h2>
           <div className="flex gap-2">
@@ -389,7 +359,7 @@ export function SocialPage() {
         </div>
         {activitiesLoading ? (
           <div className="p-4">
-            <LoadingSkeleton className="h-32 w-full" />
+            <TableSkeleton rows={5} columns={5} />
           </div>
         ) : (
           <>
@@ -471,7 +441,7 @@ export function SocialPage() {
         )}
       </section>
 
-      <section className="rounded-lg border bg-card shadow-sm">
+      <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
         <div className="flex items-center justify-between border-b p-4">
           <h2 className="text-lg font-semibold">Participation Records</h2>
           <Select
@@ -490,7 +460,7 @@ export function SocialPage() {
         </div>
         {participationsLoading ? (
           <div className="p-4">
-            <LoadingSkeleton className="h-32 w-full" />
+            <TableSkeleton rows={5} columns={5} />
           </div>
         ) : (participationsData?.data ?? []).length === 0 ? (
           <div className="p-4">
@@ -536,7 +506,7 @@ export function SocialPage() {
         )}
       </section>
 
-      <section className="rounded-lg border bg-card shadow-sm">
+      <section className="rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
         <div className="border-b p-4">
           <h2 className="text-lg font-semibold">Department Leaderboard</h2>
         </div>

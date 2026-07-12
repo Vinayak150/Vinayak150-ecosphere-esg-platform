@@ -12,24 +12,34 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
+import { cn } from "@/shared/lib/utils";
 
 interface GamificationWidgetsProps {
   data: DashboardData;
 }
 
+function rankClass(rank: number) {
+  if (rank === 1) return "font-semibold text-amber-600";
+  if (rank === 2) return "font-medium text-slate-500";
+  if (rank === 3) return "font-medium text-amber-700";
+  return "text-muted-foreground";
+}
+
 export function GamificationWidgets({ data }: GamificationWidgetsProps) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Trophy className="h-5 w-5 text-primary" />
-        <h2 className="text-lg font-semibold">Gamification</h2>
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+          <Trophy className="h-4 w-4 text-primary" aria-hidden />
+        </div>
+        <h2 className="text-lg font-semibold tracking-tight">Gamification</h2>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Trophy className="h-4 w-4" />
+              <Trophy className="h-4 w-4 text-primary" />
               Top Performers
             </CardTitle>
           </CardHeader>
@@ -48,9 +58,11 @@ export function GamificationWidgets({ data }: GamificationWidgetsProps) {
                 <TableBody>
                   {data.topPerformers.map((entry) => (
                     <TableRow key={entry.employee_id}>
-                      <TableCell>#{entry.rank}</TableCell>
-                      <TableCell>{entry.employee_name}</TableCell>
-                      <TableCell>{entry.total_xp}</TableCell>
+                      <TableCell className={cn("tabular-nums", rankClass(entry.rank))}>
+                        #{entry.rank}
+                      </TableCell>
+                      <TableCell className="font-medium">{entry.employee_name}</TableCell>
+                      <TableCell className="tabular-nums">{entry.total_xp}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -62,7 +74,7 @@ export function GamificationWidgets({ data }: GamificationWidgetsProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Trophy className="h-4 w-4" />
+              <Trophy className="h-4 w-4 text-primary" />
               XP Leaderboard
             </CardTitle>
           </CardHeader>
@@ -83,11 +95,13 @@ export function GamificationWidgets({ data }: GamificationWidgetsProps) {
                 <TableBody>
                   {data.xpLeaderboard.map((entry) => (
                     <TableRow key={entry.employee_id}>
-                      <TableCell>#{entry.rank}</TableCell>
-                      <TableCell>{entry.employee_name}</TableCell>
+                      <TableCell className={cn("tabular-nums", rankClass(entry.rank))}>
+                        #{entry.rank}
+                      </TableCell>
+                      <TableCell className="font-medium">{entry.employee_name}</TableCell>
                       <TableCell>{entry.department_name ?? "—"}</TableCell>
-                      <TableCell>{entry.total_xp}</TableCell>
-                      <TableCell>{entry.badge_count}</TableCell>
+                      <TableCell className="tabular-nums">{entry.total_xp}</TableCell>
+                      <TableCell className="tabular-nums">{entry.badge_count}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -101,7 +115,7 @@ export function GamificationWidgets({ data }: GamificationWidgetsProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Award className="h-4 w-4" />
+              <Award className="h-4 w-4 text-primary" />
               Recent Badge Unlocks
             </CardTitle>
           </CardHeader>
@@ -110,9 +124,14 @@ export function GamificationWidgets({ data }: GamificationWidgetsProps) {
               <EmptyState title="No recent unlocks" description="Badge awards will appear here." />
             ) : (
               data.recentBadgeUnlocks.map((item) => (
-                <div key={item.id} className="flex items-center justify-between rounded-md border p-3">
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:border-primary/20 hover:bg-muted/30"
+                >
                   <div className="flex items-center gap-3">
-                    <span className="text-xl">{item.badge_icon ?? "🏅"}</span>
+                    <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-xl">
+                      {item.badge_icon ?? "🏅"}
+                    </span>
                     <div>
                       <p className="text-sm font-medium">{item.badge_name}</p>
                       <p className="text-xs text-muted-foreground">{item.employee_name}</p>
@@ -130,7 +149,7 @@ export function GamificationWidgets({ data }: GamificationWidgetsProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Target className="h-4 w-4" />
+              <Target className="h-4 w-4 text-primary" />
               Challenge Progress
             </CardTitle>
           </CardHeader>
@@ -139,7 +158,10 @@ export function GamificationWidgets({ data }: GamificationWidgetsProps) {
               <EmptyState title="No active challenges" description="Challenge progress will appear here." />
             ) : (
               data.challengeProgress.map((challenge) => (
-                <div key={challenge.id} className="space-y-2 rounded-md border p-3">
+                <div
+                  key={challenge.id}
+                  className="space-y-2 rounded-lg border p-3 transition-colors hover:border-primary/20 hover:bg-muted/30"
+                >
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-sm font-medium">{challenge.title}</p>
                     <Badge variant="secondary">{challenge.status}</Badge>
@@ -149,7 +171,7 @@ export function GamificationWidgets({ data }: GamificationWidgetsProps) {
                   </p>
                   <div className="h-2 overflow-hidden rounded-full bg-muted">
                     <div
-                      className="h-full rounded-full bg-primary"
+                      className="h-full rounded-full bg-primary transition-all duration-500"
                       style={{
                         width: `${
                           challenge.participation_count > 0

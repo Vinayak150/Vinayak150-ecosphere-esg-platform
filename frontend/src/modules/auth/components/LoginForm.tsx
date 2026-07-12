@@ -62,39 +62,51 @@ export function LoginForm() {
   });
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-5" noValidate>
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">
+          Email <span className="text-destructive">*</span>
+        </Label>
         <Input
           id="email"
           type="email"
           autoComplete="email"
           placeholder="admin@ecosphere.local"
           className="w-full"
+          aria-invalid={Boolean(form.formState.errors.email)}
+          aria-describedby={form.formState.errors.email ? "email-error" : undefined}
           {...form.register("email")}
         />
         {form.formState.errors.email ? (
-          <p className="text-sm text-destructive">{form.formState.errors.email.message}</p>
+          <p id="email-error" role="alert" className="text-sm text-destructive">
+            {form.formState.errors.email.message}
+          </p>
         ) : null}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">
+          Password <span className="text-destructive">*</span>
+        </Label>
         <Input
           id="password"
           type="password"
           autoComplete="current-password"
           placeholder="Enter your password"
           className="w-full"
+          aria-invalid={Boolean(form.formState.errors.password)}
+          aria-describedby={form.formState.errors.password ? "password-error" : undefined}
           {...form.register("password")}
         />
         {form.formState.errors.password ? (
-          <p className="text-sm text-destructive">{form.formState.errors.password.message}</p>
+          <p id="password-error" role="alert" className="text-sm text-destructive">
+            {form.formState.errors.password.message}
+          </p>
         ) : null}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+      <Button type="submit" className="w-full" disabled={isSubmitting} aria-busy={isSubmitting}>
+        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
         Sign in
       </Button>
     </form>
