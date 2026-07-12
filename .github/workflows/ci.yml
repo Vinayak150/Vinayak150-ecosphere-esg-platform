@@ -43,7 +43,7 @@ jobs:
         run: |
           cd backend
           ruff check app
-          mypy app
+          mypy
 
       - name: Run migrations
         env:
